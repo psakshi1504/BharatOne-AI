@@ -28,6 +28,9 @@ const suggestions = [
 function AIAssistant() {
   const [msg, setMsg] = useState("");
 
+  const [loading, setLoading] = useState(false);
+  const [language, setLanguage] = useState("English");
+
   const [messages, setMessages] = useState<
     { role: "user" | "ai"; text: string }[]
   >([
@@ -46,6 +49,7 @@ function AIAssistant() {
     setMessages((m) => [...m, { role: "user", text: t }]);
 
     setMsg("");
+    setLoading(true);
 
     try {
       const response = await fetch("http://127.0.0.1:8000/chat", {
@@ -55,10 +59,12 @@ function AIAssistant() {
         },
         body: JSON.stringify({
           message: t,
+          language: language,
         }),
       });
 
       const data = await response.json();
+      setLoading(false);
 
       // Show backend reply
       setMessages((m) => [
@@ -69,6 +75,7 @@ function AIAssistant() {
         },
       ]);
     } catch (error) {
+      setLoading(false);
       setMessages((m) => [
         ...m,
         {
@@ -124,21 +131,35 @@ function AIAssistant() {
 
         <Card className="p-0 flex flex-col overflow-hidden">
 
-          <div className="px-5 py-4 border-b border-border flex items-center gap-3">
+          <div className="px-5 py-4 border-b border-border flex items-center justify-between">
 
-            <div className="w-10 h-10 rounded-xl bg-primary text-primary-foreground flex items-center justify-center">
-              <Sparkles className="w-5 h-5" />
-            </div>
+            <div className="flex items-center gap-3">
 
-            <div>
-              <div className="font-semibold">
-                BharatOne AI Assistant
+              <div className="w-10 h-10 rounded-xl bg-primary text-primary-foreground flex items-center justify-center">
+                <Sparkles className="w-5 h-5" />
               </div>
 
-              <div className="text-xs text-green-600">
-                ● Online
+              <div>
+                <div className="font-semibold">
+                  BharatOne AI Assistant
+                </div>
+
+                <div className="text-xs text-green-600">
+                  ● Online
+                </div>
               </div>
+
             </div>
+
+            <select
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+              className="rounded-lg border border-border bg-background px-3 py-2 text-sm"
+            >
+              <option value="English">🇬🇧 English</option>
+              <option value="Hindi">🇮🇳 हिन्दी</option>
+              <option value="Marathi">🇮🇳 मराठी</option>
+            </select>
 
           </div>
 
@@ -187,6 +208,22 @@ function AIAssistant() {
 
             ))}
 
+            {loading && (
+              <div className="flex gap-3">
+                <div className="w-9 h-9 rounded-xl bg-primary text-primary-foreground flex items-center justify-center">
+                  <Bot className="w-4 h-4" />
+                </div>
+
+                <div className="bg-muted rounded-2xl px-4 py-3">
+                  <div className="flex gap-2">
+                    <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></span>
+                    <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-150"></span>
+                    <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-300"></span>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {messages.length <= 1 && (
 
               <div>
@@ -217,36 +254,37 @@ function AIAssistant() {
 
           </div>
 
-          <div className="border-t border-border p-4">
+          <div className="border-t border-border bg-background px-6 py-5">
 
-            <div className="flex items-center gap-2 border rounded-xl px-3 py-2">
+            <div className="flex items-end gap-3 rounded-3xl border border-border bg-card px-5 py-4 shadow-lg transition-all duration-300 focus-within:border-primary focus-within:shadow-xl">
 
               <input
-                value={msg}
-                onChange={(e) => setMsg(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    send();
-                  }
-                }}
-                placeholder="Ask BharatOne AI anything..."
-                className="flex-1 bg-transparent outline-none"
-              />
+      value={msg}
+      onChange={(e) => setMsg(e.target.value)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          send();
+        }
+      }}
+      placeholder="Ask BharatOne AI anything..."
+      className="flex-1 bg-transparent text-base outline-none placeholder:text-muted-foreground"
+    />
 
-              <button
-                onClick={() => send()}
-                className="w-9 h-9 rounded-lg bg-primary text-primary-foreground flex items-center justify-center"
-              >
-                <Send className="w-4 h-4" />
-              </button>
+    <button
+      onClick={() => send()}
+      disabled={loading}
+      className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-md transition-all duration-200 hover:scale-110 hover:bg-primary/90 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+    >
+      <Send className="h-5 w-5" />
+    </button>
 
-            </div>
+  </div>
 
-            <div className="text-center text-xs text-muted-foreground mt-2">
-              BharatOne AI Connected to Backend
-            </div>
+  <div className="mt-3 text-center text-xs text-muted-foreground">
+    BharatOne AI may make mistakes. Verify important information.
+  </div>
 
-          </div>
+</div>
 
         </Card>
 

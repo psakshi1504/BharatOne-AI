@@ -16,6 +16,35 @@ const previous = [
 
 function CropDoctor() {
   const [file, setFile] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [analysis, setAnalysis] = useState<any>(null);
+  const analyzeCrop = async () => {
+  if (!imageFile) return;
+
+  setLoading(true);
+
+  try {
+    const formData = new FormData();
+    formData.append("image", imageFile);
+
+    const response = await fetch("http://127.0.0.1:8000/analyze-crop", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    console.log(data);
+    setAnalysis(data);
+
+  } catch (error) {
+    console.error(error);
+    alert("Failed to analyze crop.");
+  }
+
+  setLoading(false);
+};
   return (
     <AppShell title="Crop Doctor" subtitle="AI-powered crop disease diagnosis for farmers.">
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.2fr] gap-4">
@@ -35,11 +64,27 @@ function CropDoctor() {
                 </div>
               </div>
             )}
-            <input type="file" accept="image/*" className="hidden" onChange={(e) => {
-              const f = e.target.files?.[0]; if (f) setFile(URL.createObjectURL(f));
-            }} />
+            <input 
+              type="file" 
+              accept="image/*" 
+              className="hidden" 
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+
+                if (f) {
+                  setImageFile(f);
+                  setFile(URL.createObjectURL(f));
+                }
+              }} 
+            />
           </label>
-          <button className="mt-4 w-full h-10 rounded-lg bg-success text-success-foreground text-sm font-medium hover:opacity-90">Diagnose</button>
+          <button
+            onClick={analyzeCrop}
+            disabled={!imageFile || loading}
+            className="mt-4 w-full h-10 rounded-lg bg-success text-success-foreground text-sm font-medium hover:opacity-90 disabled:opacity-50"
+          >
+            {loading ? "Analyzing..." : "Diagnose"}
+          </button>
         </Card>
 
         <div className="space-y-4">
@@ -51,19 +96,37 @@ function CropDoctor() {
             <div className="grid sm:grid-cols-2 gap-3 text-sm">
               <div className="p-3 rounded-lg bg-muted/50">
                 <div className="text-xs text-muted-foreground">Detected</div>
-                <div className="font-semibold mt-0.5">Tomato Early Blight</div>
+                <div className="font-semibold mt-0.5">
+                  {analysis ? `${analysis.crop} - ${analysis.disease}` : "No analysis yet"}
+                </div>
               </div>
               <div className="p-3 rounded-lg bg-muted/50">
                 <div className="text-xs text-muted-foreground">Confidence</div>
-                <div className="font-semibold mt-0.5 text-success">92%</div>
+                <div className="font-semibold mt-0.5 text-success">
+                  {analysis ? analysis.confidence : "--"}
+                </div>
               </div>
               <div className="p-3 rounded-lg bg-muted/50">
                 <div className="text-xs text-muted-foreground">Severity</div>
-                <div className="mt-0.5"><Badge tone="warning">Moderate</Badge></div>
+                <div className="mt-0.5">
+                  <Badge
+                    tone={
+                      analysis?.severity === "High"
+                        ? "danger"
+                        : analysis?.severity === "Moderate"
+                        ? "warning"
+                        : "success"
+                    }
+                  >
+                    {analysis ? analysis.severity : "Unknown"}
+                  </Badge>
+                </div>
               </div>
               <div className="p-3 rounded-lg bg-muted/50">
                 <div className="text-xs text-muted-foreground">Affected Area</div>
-                <div className="font-semibold mt-0.5">~35% of foliage</div>
+                <div className="font-semibold mt-0.5">
+                  {analysis ? analysis.affected_area : "--"}
+                </div>
               </div>
             </div>
           </Card>
@@ -71,19 +134,19 @@ function CropDoctor() {
           <div className="grid sm:grid-cols-2 gap-4">
             <Card>
               <div className="flex items-center gap-2 mb-2"><FlaskConical className="w-4 h-4 text-primary" /><h4 className="font-semibold text-sm">Treatment</h4></div>
-              <p className="text-sm text-muted-foreground">Apply chlorothalonil or mancozeb-based fungicide at 7-10 day intervals. Remove infected leaves.</p>
+              <p className="text-sm text-muted-foreground">{analysis ? analysis.treatment : "No treatment available"}</p>
             </Card>
             <Card>
               <div className="flex items-center gap-2 mb-2"><Leaf className="w-4 h-4 text-success" /><h4 className="font-semibold text-sm">Organic Solution</h4></div>
-              <p className="text-sm text-muted-foreground">Neem oil spray (5ml/L) with compost tea. Mulch base with dry leaves and rotate crops.</p>
+              <p className="text-sm text-muted-foreground">{analysis ? analysis.organic_solution : "No organic solution available"}</p>
             </Card>
             <Card>
               <div className="flex items-center gap-2 mb-2"><Sprout className="w-4 h-4 text-saffron" /><h4 className="font-semibold text-sm">Fertilizer</h4></div>
-              <p className="text-sm text-muted-foreground">NPK 10-26-26 · 50 kg/acre. Add potash to strengthen plant immunity.</p>
+              <p className="text-sm text-muted-foreground">{analysis ? analysis.fertilizer : "No fertilizer recommendation"}</p>
             </Card>
             <Card>
               <div className="flex items-center gap-2 mb-2"><Droplets className="w-4 h-4 text-info" /><h4 className="font-semibold text-sm">Irrigation Advice</h4></div>
-              <p className="text-sm text-muted-foreground">Switch to drip irrigation. Water in early morning; avoid wetting foliage.</p>
+              <p className="text-sm text-muted-foreground">{analysis ? analysis.irrigation : "No irrigation advice"}</p>
             </Card>
           </div>
         </div>
