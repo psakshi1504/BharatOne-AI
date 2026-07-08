@@ -32,6 +32,16 @@ class ChatRequest(BaseModel):
     message: str
     language: str = "English"
 
+class SchemeRequest(BaseModel):
+    state: str
+    occupation: str
+    age: int
+    gender: str
+    category: str
+    income: int
+class ComplaintRequest(BaseModel):
+    issue: str
+
 
 @app.get("/")
 def home():
@@ -80,6 +90,90 @@ User Question:
             "reply": f"Error: {str(e)}"
         }
     
+@app.post("/government-schemes")
+def government_schemes(request: SchemeRequest):
+    try:
+        prompt = f"""
+You are BharatOne AI, an expert on Indian Government Schemes.
+
+Based on the user's profile, recommend ONLY the most relevant government schemes.
+
+User Profile:
+
+State: {request.state}
+Occupation: {request.occupation}
+Age: {request.age}
+Gender: {request.gender}
+Category: {request.category}
+Annual Income: ₹{request.income}
+
+IMPORTANT RULES
+
+Recommend ONLY 5-6 schemes.
+
+Each scheme should have:
+
+- name
+- category
+- eligibility
+- benefits
+- documents
+- apply_link
+
+Rules for writing:
+
+Eligibility:
+Maximum 20 words.
+
+Benefits:
+Maximum 20 words.
+
+Documents:
+Return only comma-separated document names.
+
+Use simple language.
+
+Do NOT write long paragraphs.
+
+Do NOT repeat information.
+
+Return ONLY valid JSON.
+
+Example:
+
+[
+  {{
+    "name":"PM Kisan Samman Nidhi",
+    "category":"Farmer Welfare",
+    "eligibility":"Landholding farmers in Maharashtra",
+    "benefits":"₹6000/year in 3 installments",
+    "documents":"Aadhaar, Bank Passbook, 7/12 Extract",
+    "apply_link":"https://pmkisan.gov.in"
+  }}
+]
+"""
+
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt,
+        )
+
+        clean_text = response.text.strip()
+
+        if clean_text.startswith("```json"):
+            clean_text = clean_text.replace("```json", "", 1)
+
+        if clean_text.endswith("```"):
+            clean_text = clean_text[:-3]
+
+        clean_text = clean_text.strip()
+
+        return json.loads(clean_text)
+
+    except Exception as e:
+        return {
+            "error": str(e)
+        }
 
 @app.post("/analyze-crop")
 async def analyze_crop(image: UploadFile = File(...)):
@@ -94,17 +188,67 @@ async def analyze_crop(image: UploadFile = File(...)):
                     mime_type=image.content_type,
                 ),
                 """
-You are an expert agricultural AI.
+You are an expert agricultural scientist and plant disease specialist.
 
 Analyze the uploaded crop image carefully.
 
-Return ONLY valid JSON.
+Your job is to identify:
 
-Do not use markdown.
-Do not use ```json.
-Do not explain anything.
+1. Crop name
+2. Disease (if any)
+3. Confidence percentage
+4. Severity
+5. Affected area
+6. Best treatment
+7. Organic solution
+8. Fertilizer recommendation
+9. Irrigation advice
 
-Return exactly this format:
+IMPORTANT RULES:
+
+• Return ONLY valid JSON.
+• Do NOT use Markdown.
+• Do NOT use ```json.
+• Do NOT explain anything outside the JSON.
+
+If the crop is HEALTHY:
+
+- disease = "Healthy"
+- severity = "Low"
+- affected_area = "None"
+- treatment = "No treatment required. Continue regular monitoring."
+- organic_solution = "Maintain healthy soil with compost or vermicompost."
+- fertilizer = "Continue the recommended fertilizer schedule."
+- irrigation = "Continue normal irrigation according to crop stage."
+
+If a disease is detected:
+
+- Identify ONLY the most probable disease.
+- Give practical treatment advice.
+- Suggest an organic alternative whenever possible.
+- Recommend fertilizer based on the crop's condition.
+- Recommend irrigation changes if needed.
+
+If you are NOT confident:
+
+- Mention the most likely disease.
+- Keep confidence below 70%.
+
+Severity Rules:
+
+Healthy = Low
+
+Minor symptoms = Low
+
+Visible spread = Moderate
+
+Severe infection = High
+
+Confidence must always be written like:
+
+"95%"
+
+Return EXACTLY this JSON format:
 
 {
   "crop": "",
@@ -123,6 +267,62 @@ Return exactly this format:
 
         return json.loads(response.text)
     
+    except Exception as e:
+        return {
+            "error": str(e)
+        }
+    
+@app.post("/analyze-complaint")
+async def analyze_complaint(image: UploadFile = File(...)):
+    try:
+        image_bytes = await image.read()
+
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=[
+                types.Part.from_bytes(
+                    data=image_bytes,
+                    mime_type=image.content_type,
+                ),
+                """
+You are an expert municipal complaint detection AI.
+
+Analyze the uploaded image carefully.
+
+Identify:
+
+1. issue
+2. confidence
+3. severity
+4. department
+5. resolution
+6. title
+7. description
+
+Return ONLY valid JSON.
+
+Example:
+
+{
+  "issue":"Pothole",
+  "confidence":"96%",
+  "severity":"Moderate",
+  "department":"Public Works",
+  "resolution":"3-5 Days",
+  "title":"Large pothole on road",
+  "description":"Large pothole causing inconvenience to vehicles."
+}
+"""
+            ],
+        )
+
+        text = response.text.strip()
+
+        if text.startswith("```"):
+            text = text.replace("```json", "").replace("```", "").strip()
+
+        return json.loads(text)
+
     except Exception as e:
         return {
             "error": str(e)

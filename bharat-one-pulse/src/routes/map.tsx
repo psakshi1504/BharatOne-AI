@@ -8,12 +8,12 @@ export const Route = createFileRoute("/map")({
 });
 
 const legend = [
-  { label: "Complaints", color: "bg-primary", icon: MapPin, count: 128 },
-  { label: "Hospitals", color: "bg-destructive", icon: Hospital, count: 42 },
-  { label: "Schools", color: "bg-info", icon: GraduationCap, count: 96 },
-  { label: "Water Leaks", color: "bg-[oklch(0.65_0.15_220)]", icon: Droplets, count: 17 },
-  { label: "Crop Disease", color: "bg-success", icon: Leaf, count: 34 },
-  { label: "Disaster Alerts", color: "bg-saffron", icon: AlertTriangle, count: 8 },
+  { label: "Complaints", color: "bg-primary", icon: MapPin, count: 18 },
+  { label: "Hospitals", color: "bg-destructive", icon: Hospital, count: 12 },
+  { label: "Schools", color: "bg-info", icon: GraduationCap, count: 25 },
+  { label: "Water Issues", color: "bg-[oklch(0.65_0.15_220)]", icon: Droplets, count: 6 },
+  { label: "Crop Disease", color: "bg-success", icon: Leaf, count: 5 },
+  { label: "Disaster Alerts", color: "bg-saffron", icon: AlertTriangle, count: 2 },
 ];
 
 function SmartMap() {
@@ -60,9 +60,34 @@ function SmartMap() {
               <button className="w-10 h-10 grid place-items-center hover:bg-accent"><Plus className="w-4 h-4" /></button>
               <button className="w-10 h-10 grid place-items-center hover:bg-accent border-t border-border"><Minus className="w-4 h-4" /></button>
             </div>
-            <div className="absolute bottom-4 left-4 bg-card/95 backdrop-blur rounded-xl shadow-card border border-border px-4 py-3">
-              <div className="text-xs text-muted-foreground">Placeholder Map</div>
-              <div className="text-sm font-semibold">Connect Google Maps API</div>
+            <div className="absolute bottom-4 left-4 bg-card/95 backdrop-blur rounded-xl shadow-card border border-border px-5 py-4 max-w-xs">
+
+              <div className="text-xs uppercase tracking-wide text-primary font-semibold">
+                AI Civic Intelligence
+              </div>
+
+              <div className="text-lg font-bold mt-1">
+                Smart District Overview
+              </div>
+
+              <div className="text-sm text-muted-foreground mt-2">
+                Live AI monitoring for:
+              </div>
+
+              <ul className="mt-3 space-y-1 text-sm">
+
+                <li>📍 Complaint Hotspots</li>
+
+                <li>🌾 Crop Disease Alerts</li>
+
+                <li>🏥 Nearby Hospitals</li>
+
+                <li>🏫 Schools</li>
+
+                <li>🚨 Disaster Alerts</li>
+
+              </ul>
+
             </div>
           </div>
         </Card>
@@ -89,17 +114,62 @@ function SmartMap() {
           </Card>
 
           <Card>
-            <h3 className="font-semibold mb-2">Live Alerts</h3>
-            <div className="space-y-2 text-sm">
+            <h3 className="font-semibold mb-3">
+              Live Alerts
+            </h3>
+
+            <div className="space-y-3">
+
               <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
-                <div className="font-medium text-destructive">Water leak reported</div>
-                <div className="text-xs text-muted-foreground mt-0.5">Ward 12, Indiranagar · 2 min ago</div>
+
+                <div className="font-medium text-destructive">
+                  🚧 Road damage reported
+                </div>
+
+                <div className="text-xs text-muted-foreground mt-1">
+                  Ward 8 • 5 minutes ago
+                </div>
+
               </div>
+
+              <div className="p-3 rounded-lg bg-info/10 border border-info/20">
+
+                <div className="font-medium">
+                  💧 Water leakage detected
+                </div>
+
+                <div className="text-xs text-muted-foreground mt-1">
+                  Ward 12 • 10 minutes ago
+                </div>
+
+              </div>
+
+              <div className="p-3 rounded-lg bg-success/10 border border-success/20">
+
+                <div className="font-medium">
+                  🌾 Crop disease identified
+                </div>
+
+                <div className="text-xs text-muted-foreground mt-1">
+                  Village A • 18 minutes ago
+                </div>
+
+              </div>
+
               <div className="p-3 rounded-lg bg-warning/10 border border-warning/20">
-                <div className="font-medium">Flood warning</div>
-                <div className="text-xs text-muted-foreground mt-0.5">Yelahanka Zone · 18 min ago</div>
+
+                <div className="font-medium">
+                  🌧 Heavy rainfall warning
+                </div>
+
+                <div className="text-xs text-muted-foreground mt-1">
+                  IMD • 25 minutes ago
+                </div>
+
               </div>
+
             </div>
+
           </Card>
         </div>
       </div>

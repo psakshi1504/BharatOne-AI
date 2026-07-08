@@ -17,7 +17,6 @@ import { Route as DepartmentsRouteImport } from './routes/departments'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CropDoctorRouteImport } from './routes/crop-doctor'
 import { Route as ComplaintsRouteImport } from './routes/complaints'
-import { Route as CitizenRequestsRouteImport } from './routes/citizen-requests'
 import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as AiAssistantRouteImport } from './routes/ai-assistant'
 import { Route as IndexRouteImport } from './routes/index'
@@ -62,11 +61,6 @@ const ComplaintsRoute = ComplaintsRouteImport.update({
   path: '/complaints',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CitizenRequestsRoute = CitizenRequestsRouteImport.update({
-  id: '/citizen-requests',
-  path: '/citizen-requests',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AnalyticsRoute = AnalyticsRouteImport.update({
   id: '/analytics',
   path: '/analytics',
@@ -87,7 +81,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/ai-assistant': typeof AiAssistantRoute
   '/analytics': typeof AnalyticsRoute
-  '/citizen-requests': typeof CitizenRequestsRoute
   '/complaints': typeof ComplaintsRoute
   '/crop-doctor': typeof CropDoctorRoute
   '/dashboard': typeof DashboardRoute
@@ -101,7 +94,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/ai-assistant': typeof AiAssistantRoute
   '/analytics': typeof AnalyticsRoute
-  '/citizen-requests': typeof CitizenRequestsRoute
   '/complaints': typeof ComplaintsRoute
   '/crop-doctor': typeof CropDoctorRoute
   '/dashboard': typeof DashboardRoute
@@ -116,7 +108,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/ai-assistant': typeof AiAssistantRoute
   '/analytics': typeof AnalyticsRoute
-  '/citizen-requests': typeof CitizenRequestsRoute
   '/complaints': typeof ComplaintsRoute
   '/crop-doctor': typeof CropDoctorRoute
   '/dashboard': typeof DashboardRoute
@@ -132,7 +123,6 @@ export interface FileRouteTypes {
     | '/'
     | '/ai-assistant'
     | '/analytics'
-    | '/citizen-requests'
     | '/complaints'
     | '/crop-doctor'
     | '/dashboard'
@@ -146,7 +136,6 @@ export interface FileRouteTypes {
     | '/'
     | '/ai-assistant'
     | '/analytics'
-    | '/citizen-requests'
     | '/complaints'
     | '/crop-doctor'
     | '/dashboard'
@@ -160,7 +149,6 @@ export interface FileRouteTypes {
     | '/'
     | '/ai-assistant'
     | '/analytics'
-    | '/citizen-requests'
     | '/complaints'
     | '/crop-doctor'
     | '/dashboard'
@@ -175,7 +163,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AiAssistantRoute: typeof AiAssistantRoute
   AnalyticsRoute: typeof AnalyticsRoute
-  CitizenRequestsRoute: typeof CitizenRequestsRoute
   ComplaintsRoute: typeof ComplaintsRoute
   CropDoctorRoute: typeof CropDoctorRoute
   DashboardRoute: typeof DashboardRoute
@@ -244,13 +231,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ComplaintsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/citizen-requests': {
-      id: '/citizen-requests'
-      path: '/citizen-requests'
-      fullPath: '/citizen-requests'
-      preLoaderRoute: typeof CitizenRequestsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/analytics': {
       id: '/analytics'
       path: '/analytics'
@@ -279,7 +259,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AiAssistantRoute: AiAssistantRoute,
   AnalyticsRoute: AnalyticsRoute,
-  CitizenRequestsRoute: CitizenRequestsRoute,
   ComplaintsRoute: ComplaintsRoute,
   CropDoctorRoute: CropDoctorRoute,
   DashboardRoute: DashboardRoute,

@@ -49,7 +49,7 @@ function Analytics() {
         </Card>
 
         <Card>
-          <div className="mb-3"><h3 className="font-semibold">Government Scheme Usage</h3><p className="text-xs text-muted-foreground">Applications by scheme</p></div>
+          <div className="mb-3"><h3 className="font-semibold">AI Scheme Recommendations</h3><p className="text-xs text-muted-foreground">Recommended Schemes by Category</p></div>
           <div className="h-64 flex items-center">
             <ResponsiveContainer width="60%" height="100%">
               <PieChart>
@@ -71,7 +71,12 @@ function Analytics() {
         </Card>
 
         <Card>
-          <div className="mb-3"><h3 className="font-semibold">Citizen Participation</h3><p className="text-xs text-muted-foreground">Weekly activity</p></div>
+          <div className="mb-3">
+            <h3 className="font-semibold">AI Assistant Usage</h3>
+            <p className="text-xs text-muted-foreground">
+              Daily Conversations
+            </p>
+          </div>
           <div className="h-64"><ResponsiveContainer><LineChart data={participation}>
             <CartesianGrid vertical={false} stroke={grid}/><XAxis dataKey="d" stroke={axis} fontSize={12} tickLine={false} axisLine={false}/><YAxis stroke={axis} fontSize={12} tickLine={false} axisLine={false}/>
             <Tooltip contentStyle={{borderRadius:12,border:`1px solid ${grid}`}}/>
@@ -80,7 +85,12 @@ function Analytics() {
         </Card>
 
         <Card>
-          <div className="mb-3"><h3 className="font-semibold">Pollution Trends</h3><p className="text-xs text-muted-foreground">AQI average · declining</p></div>
+          <div className="mb-3">
+            <h3 className="font-semibold">Crop Disease Detection</h3>
+            <p className="text-xs text-muted-foreground">
+              AI Crop Analysis
+            </p>
+          </div>
           <div className="h-64"><ResponsiveContainer><AreaChart data={pollution}>
             <defs><linearGradient id="a2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="oklch(0.6 0.22 25)" stopOpacity={0.35}/><stop offset="100%" stopColor="oklch(0.6 0.22 25)" stopOpacity={0}/></linearGradient></defs>
             <CartesianGrid vertical={false} stroke={grid}/><XAxis dataKey="m" stroke={axis} fontSize={12} tickLine={false} axisLine={false}/><YAxis stroke={axis} fontSize={12} tickLine={false} axisLine={false}/>
@@ -90,7 +100,12 @@ function Analytics() {
         </Card>
 
         <Card>
-          <div className="mb-3"><h3 className="font-semibold">Water Conservation</h3><p className="text-xs text-muted-foreground">Million litres saved</p></div>
+          <div className="mb-3">
+            <h3 className="font-semibold">Government Service Requests</h3>
+            <p className="text-xs text-muted-foreground">
+              Requests Processed
+            </p>
+          </div>
           <div className="h-64"><ResponsiveContainer><BarChart data={water}>
             <CartesianGrid vertical={false} stroke={grid}/><XAxis dataKey="m" stroke={axis} fontSize={12} tickLine={false} axisLine={false}/><YAxis stroke={axis} fontSize={12} tickLine={false} axisLine={false}/>
             <Tooltip contentStyle={{borderRadius:12,border:`1px solid ${grid}`}}/>

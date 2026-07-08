@@ -1,9 +1,23 @@
 import { useState, type ReactNode } from "react";
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import {
-  LayoutDashboard, Bot, MessageSquareWarning, Leaf, FileText, Map,
-  BarChart3, Users, Building2, User, Settings, Sparkles, Search,
-  Bell, Menu, X, LogOut, ChevronDown,
+  LayoutDashboard,
+  Bot,
+  MessageSquareWarning,
+  Leaf,
+  FileText,
+  Map,
+  BarChart3,
+  Building2,
+  User,
+  Settings,
+  Sparkles,
+  Search,
+  Bell,
+  Menu,
+  X,
+  LogOut,
+  ChevronDown,
 } from "lucide-react";
 
 const nav = [
@@ -14,7 +28,6 @@ const nav = [
   { to: "/schemes", label: "Government Schemes", icon: FileText },
   { to: "/map", label: "Smart Map", icon: Map },
   { to: "/analytics", label: "Analytics", icon: BarChart3 },
-  { to: "/citizen-requests", label: "Citizen Requests", icon: Users },
   { to: "/departments", label: "Government Departments", icon: Building2 },
   { to: "/profile", label: "Profile", icon: User },
   { to: "/settings", label: "Settings", icon: Settings },

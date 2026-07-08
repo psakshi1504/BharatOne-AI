@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AppShell, Card, Badge } from "@/components/AppShell";
 import { Search, FileText, ArrowRight } from "lucide-react";
 import { useState } from "react";
+import axios from "axios";
 
 export const Route = createFileRoute("/schemes")({
   component: Schemes,
@@ -9,24 +10,192 @@ export const Route = createFileRoute("/schemes")({
 });
 
 const chips = ["All", "Farmer", "Women", "Youth", "Senior Citizen", "Health", "Education", "Housing"];
-
-const schemes = [
-  { name: "PM Kisan Samman Nidhi", tag: "Farmer", eligibility: "All landholding farmer families", benefits: "₹6,000/year direct benefit", docs: "Aadhaar, Bank Passbook, Land Records" },
-  { name: "Ayushman Bharat", tag: "Health", eligibility: "Low-income households (SECC 2011)", benefits: "₹5 lakh health cover per family/year", docs: "Aadhaar, Ration Card, Family ID" },
-  { name: "Beti Bachao Beti Padhao", tag: "Women", eligibility: "Girl children under 10 years", benefits: "Educational support & incentives", docs: "Birth Certificate, School Records" },
-  { name: "PM Awas Yojana", tag: "Housing", eligibility: "EWS/LIG households without pucca house", benefits: "Up to ₹2.67 lakh subsidy", docs: "Aadhaar, Income Cert, Land Papers" },
-  { name: "Skill India Mission", tag: "Youth", eligibility: "Youth aged 15-45", benefits: "Free vocational training + certification", docs: "Aadhaar, Educational Certificates" },
-  { name: "Atal Pension Yojana", tag: "Senior Citizen", eligibility: "Indian citizens 18-40 years", benefits: "₹1,000 to ₹5,000 monthly pension", docs: "Aadhaar, Bank Account, Mobile" },
+const states = [
+  "Maharashtra",
+  "Gujarat",
+  "Karnataka",
+  "Tamil Nadu",
+  "Delhi",
+  "Uttar Pradesh",
+  "Rajasthan",
+  "Punjab",
+  "Madhya Pradesh",
+  "Bihar",
 ];
+
+const occupations = [
+  "Farmer",
+  "Student",
+  "Business",
+  "Employee",
+  "Self Employed",
+  "Homemaker",
+  "Unemployed",
+];
+
+const genders = [
+  "Male",
+  "Female",
+  "Other",
+];
+
+const categories = [
+  "General",
+  "OBC",
+  "SC",
+  "ST",
+  "EWS",
+  "SEBC"
+];
+
 
 function Schemes() {
   const [q, setQ] = useState("");
   const [active, setActive] = useState("All");
-  const filtered = schemes.filter((s) =>
-    (active === "All" || s.tag === active) && s.name.toLowerCase().includes(q.toLowerCase())
-  );
+
+  const [schemes, setSchemes] = useState<any[]>([]);
+
+  const [state, setState] = useState("");
+  const [occupation, setOccupation] = useState("");
+  const [age, setAge] = useState("");
+  const [gender, setGender] = useState("");
+  const [category, setCategory] = useState("");
+  const [income, setIncome] = useState("");
+
+  const [loading, setLoading] = useState(false);
+  const findSchemes = async () => {
+    try {
+      setLoading(true);
+
+      const response = await axios.post(
+        "http://127.0.0.1:8000/government-schemes",
+        {
+          state,
+          occupation,
+          age: Number(age),
+          gender,
+          category,
+          income: Number(income),
+        }
+      );
+
+    
+
+// If backend returns an array
+      if (Array.isArray(response.data)) {
+        setSchemes(response.data);
+      }
+// If backend returns an object with "schemes"
+      else {
+        setSchemes(response.data.schemes || []);
+      }
+
+    } catch (error) {
+      console.error(error);
+      alert("Failed to fetch schemes.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  const filtered = Array.isArray(schemes)
+    ? schemes.filter((s) =>
+        (active === "All" || s.category?.includes(active)) &&
+        s.name.toLowerCase().includes(q.toLowerCase())
+      )
+    : [];
   return (
     <AppShell title="Government Schemes" subtitle="Explore benefits, eligibility, and apply in minutes.">
+
+      <Card className="mb-6">
+        <h2 className="text-xl font-semibold mb-4">
+          🤖 AI Government Scheme Finder
+        </h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+          <select
+            value={state}
+            onChange={(e) => setState(e.target.value)}
+            className="border rounded-lg p-3"
+          >
+            <option value="">Select State</option>
+
+            {states.map((item) => (
+              <option key={item} value={item}>
+                {item}
+              </option>
+            ))}
+          </select>
+
+          <select
+            value={occupation}
+            onChange={(e) => setOccupation(e.target.value)}
+            className="border rounded-lg p-3"
+          >
+            <option value="">Select Occupation</option>
+
+            {occupations.map((item) => (
+              <option key={item} value={item}>
+                {item}
+              </option>
+            ))}
+          </select>
+
+          <input
+            type="number"
+            placeholder="Age"
+            value={age}
+            onChange={(e) => setAge(e.target.value)}
+            className="border rounded-lg p-3"
+          />
+
+          <select
+            value={gender}
+            onChange={(e) => setGender(e.target.value)}
+            className="border rounded-lg p-3"
+          >
+            <option value="">Select Gender</option>
+
+            {genders.map((item) => (
+              <option key={item} value={item}>
+                {item}
+              </option>
+            ))}
+          </select>
+
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="border rounded-lg p-3"
+          >
+            <option value="">Select Category</option>
+
+            {categories.map((item) => (
+              <option key={item} value={item}>
+                {item}
+              </option>
+            ))}
+          </select>
+
+          <input
+            type="number"
+            placeholder="Annual Income"
+            value={income}
+            onChange={(e) => setIncome(e.target.value)}
+            className="border rounded-lg p-3"
+           />
+
+        </div>
+
+        <button
+          onClick={findSchemes}
+          disabled={loading}
+          className="mt-5 bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90"
+        >
+          {loading ? "Finding Schemes..." : "Find Eligible Schemes"}
+        </button>
+      </Card>
+
       <div className="flex flex-col lg:flex-row gap-4 mb-5">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -59,7 +228,7 @@ function Schemes() {
               <div className="w-11 h-11 rounded-xl bg-saffron/15 text-[oklch(0.45_0.15_55)] grid place-items-center">
                 <FileText className="w-5 h-5" />
               </div>
-              <Badge tone="saffron">{s.tag}</Badge>
+              <Badge tone="saffron">{s.category}</Badge>
             </div>
             <h3 className="font-semibold text-lg leading-tight">{s.name}</h3>
             <dl className="mt-4 space-y-2.5 text-sm flex-1">
@@ -73,12 +242,22 @@ function Schemes() {
               </div>
               <div>
                 <dt className="text-xs font-medium text-muted-foreground">Documents</dt>
-                <dd className="mt-0.5 text-muted-foreground">{s.docs}</dd>
+                <dd className="mt-0.5 text-muted-foreground">{s.documents}</dd>
               </div>
             </dl>
-            <button className="mt-5 h-10 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 flex items-center justify-center gap-2">
-              Apply Now <ArrowRight className="w-4 h-4" />
-            </button>
+            <a
+              href={s.apply_link || "#"}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`mt-5 h-10 rounded-lg text-sm font-medium flex items-center justify-center gap-2 ${
+                s.apply_link
+                  ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed pointer-events-none"
+              }`}
+            >
+              Apply Now
+              <ArrowRight className="w-4 h-4" />
+            </a>
           </Card>
         ))}
       </div>
