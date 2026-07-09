@@ -7,10 +7,16 @@ from google.genai import types
 import os
 import tempfile
 import json
-
 load_dotenv()
 
-client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+key = os.getenv("GEMINI_API_KEY")
+
+print("========== RAILWAY DEBUG ==========")
+print("KEY EXISTS:", key is not None)
+print("KEY LENGTH:", len(key) if key else 0)
+print("KEY PREFIX:", key[:8] if key else "NONE")
+
+client = genai.Client(api_key=key)
 
 app = FastAPI(title="BharatOne AI Backend")
 
