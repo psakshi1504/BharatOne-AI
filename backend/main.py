@@ -21,6 +21,9 @@ app.add_middleware(
         "http://localhost:8081",
         "http://127.0.0.1:8080",
         "http://127.0.0.1:8081",
+
+        # Vercel Frontend
+        "https://bharat-one-ai.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
