@@ -28,7 +28,7 @@ function CropDoctor() {
     const formData = new FormData();
     formData.append("image", imageFile);
 
-    const response = await fetch("http://127.0.0.1:8000/analyze-crop", {
+    const response = await fetch("https://bharatone-ai-production.up.railway.app/analyze-crop", {
       method: "POST",
       body: formData,
     });

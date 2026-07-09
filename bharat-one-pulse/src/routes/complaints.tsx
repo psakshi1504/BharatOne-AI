@@ -69,7 +69,7 @@ function Complaints() {
       formData.append("image", selectedFile);
 
       const response = await axios.post(
-        "http://127.0.0.1:8000/analyze-complaint",
+        "https://bharatone-ai-production.up.railway.app/analyze-complaint",
         formData,
         {
           headers: {

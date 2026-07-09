@@ -68,7 +68,7 @@ function Schemes() {
       setLoading(true);
 
       const response = await axios.post(
-        "http://127.0.0.1:8000/government-schemes",
+        "https://bharatone-ai-production.up.railway.app/government-schemes",
         {
           state,
           occupation,
