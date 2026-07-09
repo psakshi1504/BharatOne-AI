@@ -19,6 +19,7 @@ import {
   LogOut,
   ChevronDown,
 } from "lucide-react";
+import bharatLogo from "@/assets/bharatone-logo.png";
 
 const nav = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -33,11 +34,48 @@ const nav = [
   { to: "/settings", label: "Settings", icon: Settings },
 ] as const;
 
+const searchItems = [
+  { name: "Dashboard", path: "/dashboard" },
+  { name: "AI Assistant", path: "/ai-assistant" },
+  { name: "AI Complaint System", path: "/complaints" },
+  { name: "Crop Doctor", path: "/crop-doctor" },
+  { name: "Government Schemes", path: "/schemes" },
+  { name: "Smart Map", path: "/map" },
+  { name: "Analytics", path: "/analytics" },
+  { name: "Government Departments", path: "/departments" },
+  { name: "Profile", path: "/profile" },
+  { name: "Settings", path: "/settings" },
+];
+
 export function AppShell({ children, title, subtitle }: { children: ReactNode; title?: string; subtitle?: string }) {
   const [open, setOpen] = useState(false);
-  const path = useRouterState({ select: (s) => s.location.pathname });
+  const [showNotifications, setShowNotifications] = useState(false);
+  // ⭐ NEW
+  const [search, setSearch] = useState("");
+  const path = useRouterState({
+    select: (s) => s.location.pathname,
+  });
   const navigate = useNavigate();
+
   const current = nav.find((n) => path.startsWith(n.to));
+
+// Logged-in user
+  const loggedUser = JSON.parse(
+    localStorage.getItem("bharatone_loggedin_user") || "{}"
+  );
+
+  const userName = loggedUser.name || "Guest";
+
+  const initials = userName
+    .split(" ")
+    .map((word: string) => word[0])
+    .join("")
+    .toUpperCase();
+
+// ⭐ Search
+  const filteredSearch = searchItems.filter((item) =>
+    item.name.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -45,9 +83,11 @@ export function AppShell({ children, title, subtitle }: { children: ReactNode; t
       <aside className={`fixed lg:sticky top-0 left-0 z-40 h-screen w-72 bg-sidebar border-r border-sidebar-border transform transition-transform lg:translate-x-0 ${open ? "translate-x-0" : "-translate-x-full"}`}>
         <div className="h-16 flex items-center justify-between px-5 border-b border-sidebar-border">
           <Link to="/dashboard" className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-primary grid place-items-center text-primary-foreground shadow-soft">
-              <Sparkles className="w-4.5 h-4.5" strokeWidth={2.5} />
-            </div>
+            <img
+              src={bharatLogo}
+              alt="BharatOne AI"
+              className="w-14 h-14 object-contain"
+            />
             <div>
               <div className="font-bold text-sm tracking-tight text-sidebar-foreground">BharatOne AI</div>
               <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Gov · Smart OS</div>
@@ -77,7 +117,10 @@ export function AppShell({ children, title, subtitle }: { children: ReactNode; t
           })}
           <div className="pt-4 mt-4 border-t border-sidebar-border">
             <button
-              onClick={() => navigate({ to: "/" })}
+              onClick={() => {
+                localStorage.removeItem("bharatone_loggedin_user");
+                navigate({ to: "/" });
+              }}
               className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
             >
               <LogOut className="w-4.5 h-4.5" /> Logout
@@ -95,22 +138,159 @@ export function AppShell({ children, title, subtitle }: { children: ReactNode; t
           <div className="relative flex-1 max-w-xl hidden sm:block">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input
-              placeholder="Search citizens, complaints, schemes..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search modules..."
               className="w-full h-10 pl-10 pr-4 rounded-lg bg-muted/60 border border-transparent focus:border-input focus:bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring/30"
             />
+            {search && (
+              <div className="absolute top-12 left-0 right-0 bg-card border border-border rounded-xl shadow-lg z-50">
+                {filteredSearch.length > 0 ? (
+                  filteredSearch.map((item) => (
+                    <button
+                      key={item.path}
+                      onClick={() => {
+                        navigate({ to: item.path });
+                        setSearch("");
+                      }}
+                      className="w-full text-left px-4 py-3 hover:bg-accent transition-colors"
+                    >
+                      {item.name}
+                    </button>
+                  ))
+                ) : (
+                  <div className="px-4 py-3 text-sm text-muted-foreground">
+                    No results found
+                  </div>
+                )}
+              </div>
+            )}
           </div>
           <div className="flex-1 sm:hidden" />
-          <button className="relative w-10 h-10 rounded-lg hover:bg-accent grid place-items-center">
-            <Bell className="w-5 h-5 text-muted-foreground" />
-            <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-destructive" />
-          </button>
+          <div className="relative">
+            <button
+              onClick={() => setShowNotifications(!showNotifications)}
+              className="relative w-10 h-10 rounded-lg hover:bg-accent grid place-items-center"
+            >
+              <Bell className="w-5 h-5 text-muted-foreground" />
+
+              <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-destructive" />
+
+            </button>
+
+            {showNotifications && (
+
+              <div className="absolute right-0 mt-2 w-80 bg-card border border-border rounded-xl shadow-lg z-50">
+
+                <div className="p-4 border-b border-border">
+
+                  <h3 className="font-semibold">
+                    Notifications
+                  </h3>
+
+                </div>
+
+                <div className="p-4 space-y-3 text-sm">
+
+                  <div className="flex gap-3">
+
+                    <span>🚨</span>
+
+                    <div>
+
+                      <div className="font-medium">
+                        New Flood Warning
+                      </div>
+
+                      <div className="text-xs text-muted-foreground">
+                        Bengaluru • 5 min ago
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                  <div className="flex gap-3">
+
+                    <span>🟢</span>
+
+                    <div>
+
+                      <div className="font-medium">
+                        Complaint CMP-2408 Resolved
+                      </div>
+
+                      <div className="text-xs text-muted-foreground">
+                        Municipality Department
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                  <div className="flex gap-3">
+
+                    <span>🏠</span>
+
+                    <div>
+
+                      <div className="font-medium">
+                        PM Awas Recommendation
+                      </div>
+
+                      <div className="text-xs text-muted-foreground">
+                        24 eligible citizens found
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                  <div className="flex gap-3">
+
+                    <span>🌾</span>
+
+                    <div>
+
+                      <div className="font-medium">
+                        Crop Disease Detected
+                      </div>
+
+                      <div className="text-xs text-muted-foreground">
+                        Nashik District
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            )}
+
+          </div>
           <div className="hidden sm:flex items-center gap-2.5 pl-3 border-l border-border">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-[oklch(0.45_0.22_270)] text-primary-foreground grid place-items-center text-sm font-semibold">AR</div>
-            <div className="text-sm">
-              <div className="font-semibold leading-tight">Arjun Reddy</div>
-              <div className="text-xs text-muted-foreground">District Officer</div>
+
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-[oklch(0.45_0.22_270)] text-primary-foreground grid place-items-center text-sm font-semibold">
+              {initials}
             </div>
+
+            <div className="text-sm">
+
+              <div className="font-semibold leading-tight">
+                {userName}
+              </div>
+
+              <div className="text-xs text-muted-foreground">
+                Citizen
+              </div>
+
+            </div>
+
             <ChevronDown className="w-4 h-4 text-muted-foreground" />
+
           </div>
         </header>
 

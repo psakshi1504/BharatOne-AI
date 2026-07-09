@@ -9,6 +9,7 @@ import {
   ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from "recharts";
 import { Link } from "@tanstack/react-router";
+import { useState } from "react";
 
 export const Route = createFileRoute("/dashboard")({
   component: Dashboard,
@@ -43,6 +44,14 @@ const complaints = [
 ];
 
 function Dashboard() {
+  const [showNotifications, setShowNotifications] = useState(false);
+
+  const loggedUser = JSON.parse(
+    localStorage.getItem("bharatone_loggedin_user") || "{}"
+  );
+
+  const userName = loggedUser.name || "Citizen";
+
   return (
     <AppShell>
       {/* Welcome */}
@@ -50,9 +59,17 @@ function Dashboard() {
         <div className="absolute -top-16 -right-16 w-64 h-64 rounded-full bg-white/10 blur-3xl" />
         <div className="absolute bottom-0 -right-8 w-40 h-40 rounded-full bg-saffron/40 blur-3xl" />
         <div className="relative">
-          <div className="text-sm opacity-80">Namaste, Arjun 👋</div>
-          <h2 className="text-2xl sm:text-3xl font-bold mt-1">Welcome back to BharatOne AI</h2>
-          <p className="opacity-85 mt-2 max-w-2xl">You have <b>18 pending complaints</b> and <b>4 new scheme applications</b> that need review today.</p>
+          <div className="text-sm opacity-80">
+            Namaste, {userName} 👋
+          </div>
+
+          <h2 className="text-2xl sm:text-3xl font-bold mt-1">
+            Welcome back to BharatOne AI
+          </h2>
+
+          <p className="opacity-85 mt-2 max-w-2xl">
+            Explore government services, AI tools, complaints, schemes, and smart governance from one platform.
+          </p>
         </div>
       </div>
 
@@ -76,6 +93,57 @@ function Dashboard() {
           </Card>
         ))}
       </div>
+
+      {/* AI Insights */}
+      <Card className="mb-6 border-l-4 border-primary">
+        <div className="flex items-start gap-4">
+          <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+            <Bot className="w-6 h-6" />
+          </div>
+
+          <div className="flex-1">
+            <h3 className="font-semibold text-lg">
+              AI Insights
+            </h3>
+
+            <p className="text-sm text-muted-foreground mb-4">
+              AI-generated summary of today's district activity
+            </p>
+
+            <div className="space-y-3">
+
+              <div className="flex items-start gap-2">
+                <span>🚨</span>
+                <span>
+                  18 new complaints detected today across Bengaluru.
+                </span>
+              </div>
+
+              <div className="flex items-start gap-2">
+                <span>🌧</span>
+                <span>
+                  Flood risk increased in low-lying areas. Emergency monitoring recommended.
+                </span>
+              </div>
+
+              <div className="flex items-start gap-2">
+                <span>🏠</span>
+                <span>
+                  24 citizens appear eligible for PM Awas Yojana.
+                </span>
+              </div>
+
+              <div className="flex items-start gap-2">
+                <span>🌾</span>
+                <span>
+                  Crop disease reports decreased by 8% compared to yesterday.
+                </span>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </Card>
 
       {/* Charts */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 mb-6">

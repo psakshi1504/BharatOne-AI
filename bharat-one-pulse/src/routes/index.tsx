@@ -13,7 +13,30 @@ function LoginPage() {
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    navigate({ to: "/dashboard" });
+
+    const storedUser = localStorage.getItem("bharatone_user");
+
+    if (!storedUser) {
+      alert("No account found. Please create an account first.");
+      return;
+    }
+
+    const user = JSON.parse(storedUser);
+
+    if (email === user.email && password === user.password) {
+
+      localStorage.setItem(
+        "bharatone_loggedin_user",
+        JSON.stringify(user)
+      );
+
+      navigate({ to: "/dashboard" });
+
+    } else {
+
+      alert("Invalid email or password.");
+
+    }
   };
 
   return (
@@ -123,7 +146,15 @@ function LoginPage() {
             </button>
 
             <p className="text-center text-sm text-muted-foreground pt-4">
-              New to BharatOne? <a href="#" className="text-primary font-medium hover:underline">Request access</a>
+              New to BharatOne?
+
+              <Link
+                to="/signup"
+                className="text-primary font-medium ml-2 hover:underline"
+              >
+                Create Account
+              </Link>
+
             </p>
           </form>
         </div>

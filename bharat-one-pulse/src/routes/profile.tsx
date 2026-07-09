@@ -1,6 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { AppShell, Card } from "@/components/AppShell";
-import { Camera, Globe, Bell, Moon, Sun, LogOut, Mail, Phone, MapPin } from "lucide-react";
+import {
+  Camera,
+  Bell,
+  Moon,
+  Sun,
+  LogOut,
+  Mail
+} from "lucide-react";
 import { useState, useEffect } from "react";
 
 export const Route = createFileRoute("/profile")({
@@ -9,6 +16,18 @@ export const Route = createFileRoute("/profile")({
 });
 
 function Profile() {
+  const loggedUser = JSON.parse(
+    localStorage.getItem("bharatone_loggedin_user") || "{}"
+  );
+
+  const userName = loggedUser.name || "Citizen";
+  const userEmail = loggedUser.email || "citizen@bharatone.ai";
+
+  const initials = userName
+    .split(" ")
+    .map((n: string) => n[0])
+    .join("")
+    .toUpperCase();
   const navigate = useNavigate();
   const [dark, setDark] = useState(false);
   useEffect(() => {
@@ -21,17 +40,57 @@ function Profile() {
         <Card>
           <div className="flex flex-col items-center text-center">
             <div className="relative">
-              <div className="w-28 h-28 rounded-full bg-gradient-to-br from-primary to-[oklch(0.45_0.22_270)] text-primary-foreground grid place-items-center text-3xl font-bold shadow-card">AR</div>
+              <div className="w-28 h-28 rounded-full bg-gradient-to-br from-primary to-[oklch(0.45_0.22_270)] text-primary-foreground grid place-items-center text-3xl font-bold shadow-card">{initials}</div>
               <button className="absolute bottom-0 right-0 w-9 h-9 rounded-full bg-card border border-border grid place-items-center shadow-soft hover:bg-accent">
                 <Camera className="w-4 h-4" />
               </button>
             </div>
-            <h2 className="text-xl font-bold mt-4">Arjun Reddy</h2>
-            <div className="text-sm text-muted-foreground">District Officer · Bengaluru</div>
-            <div className="mt-4 w-full space-y-2 text-sm">
-              <div className="flex items-center gap-2.5 p-2.5 rounded-lg bg-muted/50"><Mail className="w-4 h-4 text-muted-foreground" /> arjun.reddy@bharatone.gov.in</div>
-              <div className="flex items-center gap-2.5 p-2.5 rounded-lg bg-muted/50"><Phone className="w-4 h-4 text-muted-foreground" /> +91 98765 43210</div>
-              <div className="flex items-center gap-2.5 p-2.5 rounded-lg bg-muted/50"><MapPin className="w-4 h-4 text-muted-foreground" /> Karnataka, India</div>
+            <h2 className="text-xl font-bold mt-4">{userName}</h2>
+            <div className="text-sm text-muted-foreground">Citizen Account</div>
+            <div className="mt-4 w-full space-y-3 text-sm">
+
+              <div className="flex items-center gap-2.5 p-2.5 rounded-lg bg-muted/50">
+                <Mail className="w-4 h-4 text-muted-foreground" />
+                {userEmail}
+              </div>
+
+              {/* Account Statistics */}
+              <div className="mt-5 rounded-xl border border-border p-4 bg-muted/20">
+                <h3 className="font-semibold mb-3">Account Statistics</h3>
+
+                <div className="space-y-3">
+
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">
+                      📝 Complaints Submitted
+                    </span>
+                    <span className="font-semibold">12</span>
+                  </div>
+
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">
+                      🌾 Crop Analyses
+                    </span>
+                    <span className="font-semibold">8</span>
+                  </div>
+
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">
+                      🏛 Schemes Applied
+                    </span>
+                    <span className="font-semibold">5</span>
+                  </div>
+
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">
+                      ⭐ Member Since
+                    </span>
+                    <span className="font-semibold">July 2026</span>
+                  </div>
+
+                </div>
+              </div>
+
             </div>
           </div>
         </Card>
@@ -40,19 +99,22 @@ function Profile() {
           <Card>
             <h3 className="font-semibold mb-3">User Information</h3>
             <div className="grid sm:grid-cols-2 gap-3">
-              <Field label="Full Name" value="Arjun Reddy" />
-              <Field label="Designation" value="District Officer" />
-              <Field label="Employee ID" value="KA-DO-8821" />
-              <Field label="Department" value="Public Administration" />
-            </div>
-          </Card>
+              <Field label="Full Name" value={userName} />
 
-          <Card>
-            <div className="flex items-center gap-2 mb-3"><Globe className="w-4 h-4 text-primary" /><h3 className="font-semibold">Language</h3></div>
-            <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-              {["English", "हिंदी", "ಕನ್ನಡ", "தமிழ்", "తెలుగు", "मराठी"].map((l, i) => (
-                <button key={l} className={`h-10 rounded-lg text-sm font-medium border transition-colors ${i === 0 ? "bg-primary text-primary-foreground border-primary" : "border-input hover:bg-accent"}`}>{l}</button>
-              ))}
+              <Field label="Role" value="Citizen" />
+
+              <Field
+                label="User ID"
+                value={
+                  "BH-" +
+                  userName
+                    .split(" ")
+                    .map((n: string) => n[0])
+                    .join("")
+                    .toUpperCase() +
+                  "-001"
+                }
+              />
             </div>
           </Card>
 
